@@ -11,8 +11,5 @@
 + openai 0.28.0
 + numpy 1.19.5
 
-## Datasets
-The raw data of ml1m and LastFM can be downloaded from: https://grouplens.org/datasets/movielens/ and http://ocelma.net/MusicRecommendationDataset/lastfm-360K.html, respectively.
-
 
 
