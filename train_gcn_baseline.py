@@ -101,7 +101,7 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('--bakcbone', type=str, default='gcn')
-    parser.add_argument('--dataset', type=str, default='./data/ml-1m/process/process.pkl')
+    parser.add_argument('--dataset', type=str, default='./Data/ml-1m/data.pkl')
     parser.add_argument('--emb_size', type=int, default=64)
     parser.add_argument('--lr', type=float, default=0.003)
     parser.add_argument('--l2_reg', type=float, default=0.001)
