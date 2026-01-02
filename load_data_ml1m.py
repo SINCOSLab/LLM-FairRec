@@ -12,6 +12,7 @@ import itertools
 from generate_response import *
 import torch
 
+
 openai.api_key = 'sk-xxxxx'
 
 prompt_template = (
@@ -555,3 +556,4 @@ if __name__ == '__main__':
     trainSet, testSet, item_title, item_genre = read_data('ml-1m') # step 1
     create_prompts('ml-1m',trainSet, None) # step 2
     # extract_augment_data('ml-1m') # step 3: First run generate_response.py to augment data, then execute the extract_augment_data function to extract augmented data. (Please first comment out the above two lines)
+
