@@ -4,6 +4,8 @@
 
 + load_data_ml1m.py: Loading ml1m data, creating prompts, conducting prompt tuning, and extracting the augmented data. You can adjust the corresponding code (such as evaluation function) freely for your own dataset.
 + generate_response.py: Using the generated prompt to augment interaction data with the API of LLMs.
++ train_gcn_baseline.py: Training the lightgcn model for running fairmi.
++ train_gcn_fairmi.py: Training fairmi and calculating the personal unfairness.
 
 ## Requirements
 + scikit-learn 0.24.2
