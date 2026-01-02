@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-@author: LMC_ZC
-
-"""
 import argparse
 
 import torch
@@ -26,46 +21,11 @@ import scipy.stats as stats
 import pdb
 import sys
 
-set_seed(2024)
-
-def cal_mutual_info(sens_enc,n_users,u_sens):
-    with torch.no_grad():
-        e_su, _, _, _ = sens_enc.forward()
-        e_su = e_su.detach().cpu()
-        ex_enc = torch.load(args.pretrain_path) #加载预训练的CF模型（LightGCN）
-        e_xu, _ = ex_enc.forward()
-        e_xu = e_xu.detach().cpu()
-        inter_enc = torch.load(args.param_path)
-        e_zu, _ = inter_enc.forward()
-        e_zu = e_zu.detach().cpu()
-        club = torch.load(args.club_mdoel_path).to('cpu')
-        users = torch.tensor(list(range(n_users))).type(torch.long)
-        sens_embedding_ub = club.get_bound(e_xu[users], e_su[users])
-        # print(sens_embedding_ub)
-        non_sens_embedding_ub = club.get_bound(e_zu[users],e_su[users])
-        # print(non_sens_embedding_ub)
-        impact_values = sens_embedding_ub - non_sens_embedding_ub # 每个用户受公平性影响的数值
-        print(impact_values)
-        female_impact_values = torch.tensor(1-u_sens) * impact_values
-        # print(female_impact_values.tolist())
-        greater_than_zero = female_impact_values > 0
-        count = greater_than_zero.sum().item()
-        print(count)
-        female_impact_list = (female_impact_values * greater_than_zero).tolist()
-        l = [x for x in female_impact_list if x>0]
-        unfair_num = sum(1 for x in l if x > 5.)
-        serious_unfair_num = sum(1 for x in l if x > 8.)
-        print(unfair_num)
-        print(serious_unfair_num)
-        # with open('./data/ml-1m/female_impact_values.pkl','wb') as f:
-        with open('./data/ml-1m/female_impact_values_new.pkl', 'wb') as f:
-            pickle.dump(female_impact_values,f)
-
 def cal_mutual_info_male(sens_enc,n_users,u_sens):
     with torch.no_grad():
         e_su, _, _, _ = sens_enc.forward()
         e_su = e_su.detach().cpu()
-        ex_enc = torch.load(args.pretrain_path) #加载预训练的CF模型（LightGCN）
+        ex_enc = torch.load(args.pretrain_path)
         e_xu, _ = ex_enc.forward()
         e_xu = e_xu.detach().cpu()
         inter_enc = torch.load(args.param_path)
@@ -74,23 +34,16 @@ def cal_mutual_info_male(sens_enc,n_users,u_sens):
         club = torch.load(args.club_mdoel_path).to('cpu')
         users = torch.tensor(list(range(n_users))).type(torch.long)
         sens_embedding_ub = club.get_bound(e_xu[users], e_su[users])
-        # print(sens_embedding_ub)
         non_sens_embedding_ub = club.get_bound(e_zu[users],e_su[users])
-        # print(non_sens_embedding_ub)
-        impact_values = sens_embedding_ub - non_sens_embedding_ub # 每个用户受公平性影响的数值
+        impact_values = sens_embedding_ub - non_sens_embedding_ub
 
         male_impact_values = torch.tensor(u_sens) * impact_values
-        print(male_impact_values)
-        # print(female_impact_values.tolist())
         greater_than_zero = male_impact_values > 0
         count = greater_than_zero.sum().item()
-        print(count)
         male_impact_list = (male_impact_values * greater_than_zero).tolist()
         l = [x for x in male_impact_list if x>0]
-        count_greater_than_5 = sum(1 for x in l if x > .5)
-        count_greater_than_10 = sum(1 for x in l if x > 1.)
-        print(count_greater_than_5)
-        print(count_greater_than_10)
+        count_1 = sum(1 for x in l if x > .5)
+        count_2 = sum(1 for x in l if x > 1.)
         with open('./data/ml-1m/male_impact_values.pkl','wb') as f:
             pickle.dump(male_impact_values,f)
 
@@ -98,7 +51,7 @@ def cal_mutual_info_age(sens_enc,n_users,u_sens):
     with torch.no_grad():
         e_su, _, _, _ = sens_enc.forward()
         e_su = e_su.detach().cpu()
-        ex_enc = torch.load(args.pretrain_path) #加载预训练的CF模型（LightGCN）
+        ex_enc = torch.load(args.pretrain_path)
         e_xu, _ = ex_enc.forward()
         e_xu = e_xu.detach().cpu()
         inter_enc = torch.load(args.param_path)
@@ -107,22 +60,20 @@ def cal_mutual_info_age(sens_enc,n_users,u_sens):
         club = torch.load(args.club_mdoel_path).to('cpu')
         users = torch.tensor(list(range(n_users))).type(torch.long)
         sens_embedding_ub = club.get_bound(e_xu[users], e_su[users])
-        # print(sens_embedding_ub)
+
         non_sens_embedding_ub = club.get_bound(e_zu[users],e_su[users])
-        # print(non_sens_embedding_ub)
-        impact_values = sens_embedding_ub - non_sens_embedding_ub # 每个用户受公平性影响的数值
+
+        impact_values = sens_embedding_ub - non_sens_embedding_ub 
 
         old_impact_values = torch.tensor(1 - u_sens) * impact_values
-        # print(female_impact_values.tolist())
+
         greater_than_zero = old_impact_values > 0
         count = greater_than_zero.sum().item()
-        print(count) # 1644
+
         male_impact_list = (old_impact_values * greater_than_zero).tolist()
         l = [x for x in male_impact_list if x>0]
-        count_greater_than_5 = sum(1 for x in l if x > 3.3) # 380
-        count_greater_than_10 = sum(1 for x in l if x > 5.2) # 125
-        print(count_greater_than_5)
-        print(count_greater_than_10)
+        count_1 = sum(1 for x in l if x > 3.3) 
+        count_2 = sum(1 for x in l if x > 5.2) 
         with open('./data/ml-1m/old_impact_values.pkl','wb') as f:
             pickle.dump(old_impact_values,f)
 
@@ -237,8 +188,7 @@ def train_unify_mi(sens_enc, inter_enc, club, dataset, u_sens,
                 n_users=n_users,
                 n_items=n_items,
                 train_u2i=train_u2i,
-                test_u2i=test_u2i,
-                # test_u2i=valid_u2i,
+                test_u2i=valid_u2i,
                 sens=u_sens,
                 num_workers=args.num_workers)
 
@@ -271,7 +221,7 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('--bakcbone', type=str, default='gcn')
-    parser.add_argument('--dataset', type=str, default='./data/ml-1m/process/process_ours_age.pkl')
+    parser.add_argument('--dataset', type=str, default='./data/ml-1m/process/process.pkl')
     parser.add_argument('--emb_size', type=int, default=64)
     parser.add_argument('--hidden_size', type=int, default=256)
     parser.add_argument('--lr', type=float, default=0.001)
@@ -280,7 +230,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=2048)
     parser.add_argument('--num_workers', type=int, default=6)
     parser.add_argument('--log_path', type=str, default='logs/gcn_fairmi.txt')
-    parser.add_argument('--param_path', type=str, default='param/gcn_fairmi_age.pth')
+    parser.add_argument('--param_path', type=str, default='param/gcn_fairmi.pth')
     parser.add_argument('--club_mdoel_path', type=str, default='param/club.pth')
     parser.add_argument('--pretrain_path', type=str, default='param/gcn_base.pth')
     parser.add_argument('--lreg', type=float, default=0.1)
@@ -306,8 +256,8 @@ if __name__ == '__main__':
         user_side_features = pickle.load(f)
         n_users, n_items = pickle.load(f)
 
-    # u_sens = user_side_features['gender'].astype(np.int32) # the sensitive attributes(gender) of all users
-    u_sens = user_side_features['age'].astype(np.int32)  # the sensitive attributes(gender) of all users
+    u_sens = user_side_features['gender'].astype(np.int32) # the sensitive attributes(gender) of all users
+    # u_sens = user_side_features['age'].astype(np.int32)  # the sensitive attributes(gender) of all users
     dataset = BPRTrainLoader(train_set, train_u2i, n_items)
 
     graph = Graph(n_users, n_items, train_u2i)
@@ -321,7 +271,6 @@ if __name__ == '__main__':
     club = CLUBSample(args.emb_size, args.emb_size, args.hidden_size, args.device)
     train_semigcn(sens_enc, u_sens, n_users, device=args.device) # train sensitive attribute encoder first
     train_unify_mi(sens_enc, inter_enc, club, dataset, u_sens, n_users, n_items, train_u2i, test_u2i, valid_u2i, args)
-    # cal_mutual_info(sens_enc,n_users,u_sens)
-    # cal_mutual_info_male(sens_enc, n_users, u_sens)
+    cal_mutual_info_male(sens_enc, n_users, u_sens)
     # cal_mutual_info_age(sens_enc, n_users, u_sens)
     sys.stdout = None
