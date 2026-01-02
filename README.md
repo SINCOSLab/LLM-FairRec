@@ -13,5 +13,10 @@
 + openai 0.28.0
 + numpy 1.19.5
 
+## Acknowledgement
 
+Our implementation is based on and inspired by **FairMI**.  
+We sincerely thank the authors of FairMI for their open-source contribution.
+
+FairMI GitHub repository: https://github.com/chenzhao-hfut/FairMI
 
