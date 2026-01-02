@@ -9,7 +9,7 @@ import time
 from collections import defaultdict
 import pickle
 import os
-
+ 
 openai.api_key = 'sk-xxxxx'
 
 def read_paragraphs(file_path):
@@ -140,5 +140,6 @@ def generate_response(dataset_name):
 
 if __name__ == '__main__':
     generate_response('ml-1m')
+
 
 
